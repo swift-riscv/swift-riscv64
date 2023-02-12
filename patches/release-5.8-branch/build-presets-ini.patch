@@ -1,5 +1,5 @@
 diff --git a/utils/build-presets.ini b/utils/build-presets.ini
-index c285e0362b9..731183246d5 100644
+index c285e0362b9..7c6248de07e 100644
 --- a/utils/build-presets.ini
 +++ b/utils/build-presets.ini
 @@ -831,6 +831,8 @@ build-swift-static-stdlib
@@ -7,16 +7,7 @@ index c285e0362b9..731183246d5 100644
  build-swift-stdlib-unittest-extra
  
 +skip-early-swift-driver
-+
++skip-early-swiftsyntax
  # Executes the lit tests for the installable package that is created
  # Assumes the swift-integration-tests repo is checked out
  
-@@ -875,7 +877,7 @@ lldb-test-swift-only
- 
- install-foundation
- install-libdispatch
--reconfigure
-+skip-reconfigure
- 
- [preset: buildbot_linux]
- mixin-preset=
