@@ -1,0 +1,33 @@
+diff --git a/utils/build-script-impl b/utils/build-script-impl
+index 3b9c66ee353..5a06e951de6 100755
+--- a/utils/build-script-impl
++++ b/utils/build-script-impl
+@@ -460,6 +460,7 @@ function verify_host_is_supported() {
+       | linux-powerpc           \
+       | linux-powerpc64         \
+       | linux-powerpc64le       \
++      | linux-riscv64           \
+       | linux-s390x             \
+       | macosx-x86_64           \
+       | macosx-arm64            \
+diff --git a/utils/swift_build_support/swift_build_support/targets.py b/utils/swift_build_support/swift_build_support/targets.py
+index 02202859ee5..2b5af0af696 100644
+--- a/utils/swift_build_support/swift_build_support/targets.py
++++ b/utils/swift_build_support/swift_build_support/targets.py
+@@ -274,6 +274,7 @@ class StdlibDeploymentTarget(object):
+         "powerpc",
+         "powerpc64",
+         "powerpc64le",
++        "riscv64",
+         "s390x"])
+ 
+     FreeBSD = Platform("freebsd", archs=["x86_64"])
+@@ -360,6 +361,8 @@ class StdlibDeploymentTarget(object):
+                 return StdlibDeploymentTarget.Linux.powerpc64
+             elif machine == 'ppc64le':
+                 return StdlibDeploymentTarget.Linux.powerpc64le
++            elif machine == 'riscv64':
++                return StdlibDeploymentTarget.Linux.riscv64
+             elif machine == 's390x':
+                 return StdlibDeploymentTarget.Linux.s390x
+ 
