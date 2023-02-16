@@ -1,0 +1,15 @@
+diff --git a/utils/build-presets.ini b/utils/build-presets.ini
+index 0c26d9e9407..6ba6fe15920 100644
+--- a/utils/build-presets.ini
++++ b/utils/build-presets.ini
+@@ -39,7 +39,9 @@ no-swift-stdlib-assertions
+ [preset: mixin_linux_install_components_with_clang]
+ 
+ swift-install-components=autolink-driver;compiler;clang-resource-dir-symlink;stdlib;swift-remote-mirror;sdk-overlay;static-mirror-lib;toolchain-tools;license;sourcekit-inproc
+-llvm-install-components=llvm-ar;llvm-cov;llvm-profdata;IndexStore;clang;clang-resource-headers;compiler-rt;clangd;lld;LTO;clang-features-file
++llvm-install-components=llvm-ar;llvm-cov;llvm-profdata;IndexStore;clang;clang-resource-headers;clangd;lld;LTO;clang-features-file
++
++skip-build-compiler-rt
+ 
+ [preset: mixin_linux_installation]
+ mixin-preset=
