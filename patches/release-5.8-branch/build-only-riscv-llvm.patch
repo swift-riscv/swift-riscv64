@@ -1,0 +1,39 @@
+diff --git a/utils/build-presets.ini b/utils/build-presets.ini
+index ddefaff21c5..69db9da68ab 100644
+--- a/utils/build-presets.ini
++++ b/utils/build-presets.ini
+@@ -1473,7 +1473,7 @@ mixin-preset=
+ [preset: LLDB_Nested]
+ skip-build-benchmarks
+ install-destdir=%(swift_install_destdir)s
+-llvm-targets-to-build=X86;ARM;AArch64;PowerPC;SystemZ;Mips
++llvm-targets-to-build=RISCV
+ 
+ [preset: LLDB_Swift_DebugAssert]
+ mixin-preset=
+diff --git a/utils/build_swift/build_swift/driver_arguments.py b/utils/build_swift/build_swift/driver_arguments.py
+index 828085e9437..198cdda36a1 100644
+--- a/utils/build_swift/build_swift/driver_arguments.py
++++ b/utils/build_swift/build_swift/driver_arguments.py
+@@ -1232,7 +1232,7 @@ def create_argument_parser():
+            help='enable building llvm using modules')
+ 
+     option('--llvm-targets-to-build', store,
+-           default='X86;ARM;AArch64;PowerPC;SystemZ;Mips',
++           default='RISCV',
+            help='LLVM target generators to build')
+ 
+     option('--llvm-ninja-targets', append,
+diff --git a/utils/build_swift/tests/expected_options.py b/utils/build_swift/tests/expected_options.py
+index ff8f4c270dd..04fe07b9b80 100644
+--- a/utils/build_swift/tests/expected_options.py
++++ b/utils/build_swift/tests/expected_options.py
+@@ -209,7 +209,7 @@ EXPECTED_DEFAULTS = {
+     'llvm_ninja_targets_for_cross_compile_hosts': [],
+     'llvm_max_parallel_lto_link_jobs':
+         defaults.LLVM_MAX_PARALLEL_LTO_LINK_JOBS,
+-    'llvm_targets_to_build': 'X86;ARM;AArch64;PowerPC;SystemZ;Mips',
++    'llvm_targets_to_build': 'RISCV',
+     'tsan_libdispatch_test': False,
+     'long_test': False,
+     'lto_type': None,
