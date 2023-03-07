@@ -1,0 +1,13 @@
+diff --git a/llvm/lib/Target/RISCV/RISCVISelLowering.cpp b/llvm/lib/Target/RISCV/RISCVISelLowering.cpp
+index 6e19b831b4ac..d2af6703d505 100644
+--- a/llvm/lib/Target/RISCV/RISCVISelLowering.cpp
++++ b/llvm/lib/Target/RISCV/RISCVISelLowering.cpp
+@@ -10316,6 +10316,8 @@ SDValue RISCVTargetLowering::LowerFormalArguments(
+   default:
+     report_fatal_error("Unsupported calling convention");
+   case CallingConv::C:
++  case CallingConv::Swift:
++  case CallingConv::SwiftTail:
+   case CallingConv::Fast:
+     break;
+   case CallingConv::GHC:
