@@ -1,0 +1,12 @@
+diff --git a/utils/build-presets.ini b/utils/build-presets.ini
+index ddefaff21c5..2fe384bacb4 100644
+--- a/utils/build-presets.ini
++++ b/utils/build-presets.ini
+@@ -851,6 +851,7 @@ installable-package=%(installable_package)s
+ # in Linux CI bots
+ relocate-xdg-cache-home-under-build-subdir
+ 
++llvm-targets-to-build=host
+ 
+ [preset: buildbot_linux_base]
+ mixin-preset=
