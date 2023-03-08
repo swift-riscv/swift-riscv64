@@ -1,0 +1,13 @@
+diff --git a/utils/build-presets.ini b/utils/build-presets.ini
+index ddefaff21c5..a2a3005bbcf 100644
+--- a/utils/build-presets.ini
++++ b/utils/build-presets.ini
+@@ -851,6 +851,8 @@ installable-package=%(installable_package)s
+ # in Linux CI bots
+ relocate-xdg-cache-home-under-build-subdir
+ 
++skip-early-swift-driver
++skip-early-swiftsyntax
+ 
+ [preset: buildbot_linux_base]
+ mixin-preset=
