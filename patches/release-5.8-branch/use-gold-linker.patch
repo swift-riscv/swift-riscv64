@@ -1,0 +1,12 @@
+diff --git a/lib/Driver/UnixToolChains.cpp b/lib/Driver/UnixToolChains.cpp
+index 389afb821dd..60167db5898 100644
+--- a/lib/Driver/UnixToolChains.cpp
++++ b/lib/Driver/UnixToolChains.cpp
+@@ -104,6 +104,7 @@ std::string toolchains::GenericUnix::getDefaultLinker() const {
+   case llvm::Triple::x86_64:
+   case llvm::Triple::ppc64:
+   case llvm::Triple::ppc64le:
++  case llvm::Triple::riscv64:
+   case llvm::Triple::systemz:
+     // BFD linker has issues wrt relocations against protected symbols.
+     return "gold";
