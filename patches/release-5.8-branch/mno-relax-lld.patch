@@ -1,0 +1,16 @@
+diff --git a/stdlib/cmake/modules/SwiftSource.cmake b/stdlib/cmake/modules/SwiftSource.cmake
+index d5d57dfd18a..ce6503d44bc 100644
+--- a/stdlib/cmake/modules/SwiftSource.cmake
++++ b/stdlib/cmake/modules/SwiftSource.cmake
+@@ -570,6 +570,10 @@ function(_compile_swift_files
+ 
+   list(APPEND swift_flags ${SWIFT_STDLIB_EXTRA_SWIFT_COMPILE_FLAGS})
+ 
++  if(CFLAGS_ARCH STREQUAL "riscv64")
++     list(APPEND swift_flags "-Xcc" "-mno-relax" "-Xcc" "-mabi=lp64d" "-Xcc" "-march=rv64gc")
++  endif()
++
+   list(APPEND swift_flags ${SWIFT_EXPERIMENTAL_EXTRA_FLAGS})
+ 
+   if(SWIFTFILE_OPT_FLAGS)
+# 
