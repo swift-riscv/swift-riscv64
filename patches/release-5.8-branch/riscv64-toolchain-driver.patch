@@ -1,0 +1,13 @@
+diff --git a/clang/test/Driver/riscv64-toolchain.c b/clang/test/Driver/riscv64-toolchain.c
+index 4c7c04500d6e..dfa932d3cd01 100644
+--- a/clang/test/Driver/riscv64-toolchain.c
++++ b/clang/test/Driver/riscv64-toolchain.c
+@@ -7,7 +7,7 @@
+ // CC1: clang{{.*}} "-cc1" "-triple" "riscv64"
+ 
+ // Test interaction with -fuse-ld=lld, if lld is available.
+-// RUN: %clang %s -### --target=riscv32 -fuse-ld=lld \
++// RUN: %clang %s -### --target=riscv64 -fuse-ld=lld \
+ // RUN:   --gcc-toolchain=%S/Inputs/basic_riscv64_tree 2>&1 \
+ // RUN:   | FileCheck -check-prefix=LLD %s
+ // LLD: {{(error: invalid linker name in argument '-fuse-ld=lld')|(ld.lld)}}
