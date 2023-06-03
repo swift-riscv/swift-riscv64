@@ -7,7 +7,7 @@ index ddefaff21c5..0021e261650 100644
      mixin_linux_install_components_with_clang
  
 +extra-cmake-options=
-+   -DSWIFT_USE_LINKER=ld
++   -DLLVM_USE_LINKER=ld
 +
  llbuild
  swiftpm
