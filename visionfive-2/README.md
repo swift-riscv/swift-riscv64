@@ -14,6 +14,8 @@
 
 [Starfive / Visionfive 2](https://drive.google.com/drive/folders/1yhMVrB05wSjcqbrxgW2nXJNOeSC3ViRx)
 
+## Setup and Fixes
+
 ### Boot From NVME
 
 [How to boot from nvme drive](docs/boot-from-nvme.md)
