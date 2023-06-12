@@ -16,11 +16,13 @@ From [VisionFive2](https://drive.google.com/drive/folders/1cctIVdCfbPhKpyQ0PcmCQ
 
 ### Load img to SD Card
 
-Use Etcher or similar software to load the `sdcard.img` to an sd card.
+Use Etcher or similar software to load the `sdcard.img` onto an sd card.
 
 ### Install NVME to Board
 
 Install the NVME drive to the board.
+
+![](images/nvme.jpg)
 
 ### First Boot
 
@@ -30,7 +32,7 @@ Set the `boot mode` to the SDIO by setting the boot switches as in the image bel
 
 Insert the sdcard and power on the board.
 
-After board has booted from sd card login via ssh.  
+After the board has booted from sd card login via ssh.  
 user = `root`  
 password = `starfive`
 
