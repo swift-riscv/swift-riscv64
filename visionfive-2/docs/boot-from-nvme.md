@@ -123,6 +123,12 @@ cat /etc/apt/sources.list
 deb https://deb.debian.org/debian-ports/ unstable main contrib non-free
 ```
 
+```sh
+# update keys
+wget https://deb.debian.org/debian/pool/main/d/debian-ports-archive-keyring/debian-ports-archive-keyring_2023.02.01_all.deb
+dpkg -i debian-ports-archive-keyring_2023.02.01_all.deb
+```
+
 ```bash
 apt update
 apt upgrade
