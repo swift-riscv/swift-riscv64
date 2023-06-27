@@ -2,7 +2,7 @@
 
 Building swift for riscv64 platforms
 
-### [How to setup a Developer Environment for Riscv64 using Docker](/docs/riscv64-dev-env/Building%20a%20Developer%20Environment%20for%20Riscv64.md)
+### [How to setup a Developer Environment for Riscv64 using Docker](/docs/riscv64-dev-env/build-dev-environment-for-riscv64.md)
 
 <br/>
 
