@@ -165,15 +165,16 @@ default            docker
 
 To use a `riscv64` image all we need to do is specify the `platform` in the docker run command.  
 When selecting an image on [Docker Hub](https://hub.docker.com/) make sure that the image supports the `linux/riscv64` platform.  
-Under `OS/ARCH` it should list `riscv64`.  
+Under `OS/ARCH` it should list `riscv64`.
+
 ![](os-riscv.png)
-[Ubuntu](https://hub.docker.com/_/ubuntu/tags) have some official riscv64 images
-and [riscv64](https://hub.docker.com/u/riscv64) have images for other distributions such as `Debian`.
+
+The best place for riscv64 images is [riscv64](https://hub.docker.com/u/riscv64). They have images for many distributions such as `Debian`, `Ubuntu`, etc. In this example we will use the `debian unstable` image to get access to the latest riscv64 packages.
 
 To create and run a riscv64 container add `--platform linux/riscv64` to the `run` command -
 
 ```bash
-docker run --platform=linux/riscv64 -it ubuntu:kinetic-20221130
+docker run --platform=linux/riscv64 -it riscv64/debian:unstable
 ```
 
 Run `uname -m` in the new container and it should return `riscv64`
@@ -191,7 +192,7 @@ To build a `riscv64` docker image we just need to add the platform to `FROM` in 
 
 ```javascript
 
-FROM --platform=linux/riscv64 ubuntu:kinetic-20221130
+FROM --platform=linux/riscv64 riscv64/debian:unstable
 
 ```
 
