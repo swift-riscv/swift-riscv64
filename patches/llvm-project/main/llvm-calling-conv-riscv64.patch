@@ -1,0 +1,74 @@
+diff --git a/clang/lib/Basic/Targets/RISCV.h b/clang/lib/Basic/Targets/RISCV.h
+index e4e39506bccf..682bb2c2baf5 100644
+--- a/clang/lib/Basic/Targets/RISCV.h
++++ b/clang/lib/Basic/Targets/RISCV.h
+@@ -101,6 +101,17 @@ public:
+ 
+   bool hasBitIntType() const override { return true; }
+ 
++  CallingConvCheckResult checkCallingConvention(CallingConv CC) const override {
++    switch (CC) {
++    case CC_Swift:
++      return CCCR_OK;
++    case CC_SwiftAsync:
++      return CCCR_Error;
++    default:
++      return CCCR_Warning;
++    }
++  }
++
+   bool useFP16ConversionIntrinsics() const override {
+     return false;
+   }
+diff --git a/clang/lib/CodeGen/Targets/RISCV.cpp b/clang/lib/CodeGen/Targets/RISCV.cpp
+index eae2d91ba3f0..b8f2bd128c51 100644
+--- a/clang/lib/CodeGen/Targets/RISCV.cpp
++++ b/clang/lib/CodeGen/Targets/RISCV.cpp
+@@ -18,8 +18,9 @@ using namespace clang::CodeGen;
+ //===----------------------------------------------------------------------===//
+ 
+ namespace {
+-class RISCVABIInfo : public DefaultABIInfo {
++class RISCVABIInfo : public SwiftABIInfo {
+ private:
++  DefaultABIInfo defaultInfo;
+   // Size of the integer ('x') registers in bits.
+   unsigned XLen;
+   // Size of the floating point ('f') registers in bits. Note that the target
+@@ -36,7 +37,7 @@ private:
+ 
+ public:
+   RISCVABIInfo(CodeGen::CodeGenTypes &CGT, unsigned XLen, unsigned FLen)
+-      : DefaultABIInfo(CGT), XLen(XLen), FLen(FLen) {}
++      : SwiftABIInfo(CGT), defaultInfo(CGT), XLen(XLen), FLen(FLen) {}
+ 
+   // DefaultABIInfo's classifyReturnType and classifyArgumentType are
+   // non-virtual, but computeInfo is virtual, so we overload it.
+@@ -61,6 +62,14 @@ public:
+                                                CharUnits Field2Off) const;
+ 
+   ABIArgInfo coerceVLSVector(QualType Ty) const;
++
++  private:
++  bool shouldPassIndirectlyForSwift(ArrayRef<llvm::Type *> scalars,
++                                    bool asReturnValue) const override {
++    return occupiesMoreThan(CGT, scalars, /*total*/ 4);
++  }
++
++  bool isSwiftErrorInRegister() const override { return false; }
+ };
+ } // end anonymous namespace
+ 
+diff --git a/llvm/lib/Target/RISCV/RISCVISelLowering.cpp b/llvm/lib/Target/RISCV/RISCVISelLowering.cpp
+index ef9e96b6cca4..2dc4beeb792b 100644
+--- a/llvm/lib/Target/RISCV/RISCVISelLowering.cpp
++++ b/llvm/lib/Target/RISCV/RISCVISelLowering.cpp
+@@ -14930,6 +14930,8 @@ SDValue RISCVTargetLowering::LowerFormalArguments(
+   default:
+     report_fatal_error("Unsupported calling convention");
+   case CallingConv::C:
++  case CallingConv::Swift:
++  case CallingConv::SwiftTail:
+   case CallingConv::Fast:
+     break;
+   case CallingConv::GHC:
