@@ -1,0 +1,28 @@
+diff --git a/lib/Driver/UnixToolChains.cpp b/lib/Driver/UnixToolChains.cpp
+index 389afb821dd..c57e8120e26 100644
+--- a/lib/Driver/UnixToolChains.cpp
++++ b/lib/Driver/UnixToolChains.cpp
+@@ -99,7 +99,7 @@ std::string toolchains::GenericUnix::getDefaultLinker() const {
+     // section on these targets, it also generates COPY relocations for
+     // final executables, as such, unless specified, we default to gold
+     // linker.
+-    return "gold";
++    return "lld";
+   case llvm::Triple::x86:
+   case llvm::Triple::x86_64:
+   case llvm::Triple::ppc64:
+diff --git a/utils/build-presets.ini b/utils/build-presets.ini
+index d9c2da22b1f..24c69f7e885 100644
+--- a/utils/build-presets.ini
++++ b/utils/build-presets.ini
+@@ -895,6 +895,10 @@ relocate-xdg-cache-home-under-build-subdir
+ skip-early-swift-driver
+ skip-early-swiftsyntax
+ 
++extra-cmake-options=
++   -DSWIFT_USE_LINKER=lld
++   -DLLVM_USE_LINKER=lld
++
+ [preset: buildbot_linux_base]
+ mixin-preset=
+     mixin_linux_installation
