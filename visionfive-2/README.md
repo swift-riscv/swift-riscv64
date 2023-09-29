@@ -12,7 +12,8 @@
 
 ### Starfive
 
-[Starfive / Visionfive 2](https://drive.google.com/drive/folders/1yhMVrB05wSjcqbrxgW2nXJNOeSC3ViRx)
+Official [VisionFive 2 Single Board Computer Quick Start Guide](https://doc-en.rvspace.org/VisionFive2/Quick_Start_Guide/index.html)
+- Direct link to documented [Getting Started Chapter](https://doc-en.rvspace.org/VisionFive2/Quick_Start_Guide/VisionFive2_QSG/getting_started.html)
 
 ## Setup and Fixes
 
