@@ -6,7 +6,7 @@ Building swift for riscv64 platforms
 
 <br/>
 
-### [Builds running on Swift Community CI Server](https://ci.swiftlang.xyz/view/release-5.8/)
+### [Builds running on Swift Community CI Server](https://ci.swiftlang.xyz/view/5.8-dev/)
 
 Ubuntu Jammy 22.04 - Swift release/5.8 branch &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Build Status](https://ci.swiftlang.xyz/job/swift-5.8-ubuntu-jammy-riscv64/badge/icon)](https://ci.swiftlang.xyz/job/swift-5.8-ubuntu-jammy-riscv64/)
 
