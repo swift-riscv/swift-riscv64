@@ -1,0 +1,14 @@
+diff --git a/utils/build-presets.ini b/utils/build-presets.ini
+index 6a93cc25e6c..bbec27831f9 100644
+--- a/utils/build-presets.ini
++++ b/utils/build-presets.ini
+@@ -831,6 +831,9 @@ llvm-install-components=llvm-ar;llvm-cov;llvm-profdata;IndexStore;clang;clang-re
+ mixin-preset=
+     mixin_linux_install_components_with_clang
+ 
++extra-cmake-options=
++   -DLLVM_USE_LINKER=lld
++
+ llbuild
+ swiftpm
+ swift-driver
