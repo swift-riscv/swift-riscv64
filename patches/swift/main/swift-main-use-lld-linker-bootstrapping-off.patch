@@ -1,0 +1,51 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 43747db4d55..b99b00a2c4d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -960,7 +960,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows" AND NOT CMAKE_HOST_SYSTEM_NAME STREQ
+ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+   set(SWIFT_USE_LINKER_default "")
+ else()
+-  set(SWIFT_USE_LINKER_default "gold")
++  set(SWIFT_USE_LINKER_default "lld")
+ endif()
+ set(SWIFT_USE_LINKER ${SWIFT_USE_LINKER_default} CACHE STRING
+     "Build Swift with a non-default linker")
+diff --git a/lib/Driver/UnixToolChains.cpp b/lib/Driver/UnixToolChains.cpp
+index f6856c17e16..e1aeaecb6e9 100644
+--- a/lib/Driver/UnixToolChains.cpp
++++ b/lib/Driver/UnixToolChains.cpp
+@@ -124,14 +124,14 @@ std::string toolchains::GenericUnix::getDefaultLinker() const {
+     // section on these targets, it also generates COPY relocations for
+     // final executables, as such, unless specified, we default to gold
+     // linker.
+-    return "gold";
++    return "lld";
+   case llvm::Triple::x86:
+   case llvm::Triple::x86_64:
+   case llvm::Triple::ppc64:
+   case llvm::Triple::ppc64le:
+   case llvm::Triple::systemz:
+     // BFD linker has issues wrt relocations against protected symbols.
+-    return "gold";
++    return "lld";
+   default:
+     // Otherwise, use the default BFD linker.
+     return "";
+diff --git a/utils/build-presets.ini b/utils/build-presets.ini
+index 666321ea056..06502df4539 100644
+--- a/utils/build-presets.ini
++++ b/utils/build-presets.ini
+@@ -810,6 +810,12 @@ llvm-install-components=llvm-ar;llvm-cov;llvm-profdata;IndexStore;clang;clang-re
+ mixin-preset=
+     mixin_linux_install_components_with_clang
+ 
++extra-cmake-options=
++   -DLLVM_USE_LINKER=lld
++   -DSWIFT_USE_LINKER=lld
++
++bootstrapping=off
++
+ llbuild
+ swiftpm
+ swift-driver
