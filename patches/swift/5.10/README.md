@@ -1,15 +1,33 @@
+## Clone the Swift Project Repositories
+
+```sh
+# clone swift and checkout version
+git clone https://github.com/apple/swift.git
+cd swift
+git checkout release/5.10
+cd -
+
+# clone supporting repositories
+./swift/utils/update-checkout --clone --tag swift-5.10-RELEASE
+
+```
+
 ## Patches for swift 5.10 release
 
 ```sh
 # swift
 cd swift
-wget https://raw.githubusercontent.com/futurejones/swift-arm64/master/swift-5.10-patches/set-lld-linker-as-default-5.10-v2.patch
+wget https://raw.githubusercontent.com/swift-riscv/swift-riscv64/main/patches/swift/5.10/set-lld-linker-as-default-5.10-v2.patch
 git apply set-lld-linker-as-default-5.10-v2.patch
 
-wget https://raw.githubusercontent.com/futurejones/swift-arm64/master/swift-5.10-patches/bootstrapping-off-5.10.patch
+# note: apply skip-build-libicu patch before bootstrapping-off patch if needed
+wget https://raw.githubusercontent.com/swift-riscv/swift-riscv64/main/patches/swift/5.10/skip-build-libicu-5.10.patch
+git apply skip-build-libicu-5.10.patch
+
+wget https://raw.githubusercontent.com/swift-riscv/swift-riscv64/main/patches/swift/5.10/bootstrapping-off-5.10.patch
 git apply bootstrapping-off-5.10.patch
 
-wget https://raw.githubusercontent.com/futurejones/swift-arm64/master/swift-5.10-patches/nostart-stop-gc-5.10.patch
+wget https://raw.githubusercontent.com/swift-riscv/swift-riscv64/main/patches/swift/5.10/nostart-stop-gc-5.10.patch
 git apply nostart-stop-gc-5.10.patch
 cd -
 
@@ -17,4 +35,12 @@ cd -
 cd swift-driver
 wget https://github.com/apple/swift-driver/pull/1545.patch
 git apply 1545.patch
+cd -
+```
+
+## Build Swift
+
+```sh
+# $USER = build-user
+./swift/utils/build-script --preset buildbot_linux,no_test install_destdir=/home/build-user/swift-install installable_package=/home/build-user/swift-5.10-RELEASE.tar.gz
 ```
