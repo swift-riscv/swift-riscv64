@@ -6,7 +6,7 @@ Building swift for riscv64 platforms
 
 <br/>
 
-### [Builds running on Swift Community CI Server](https://ci.swiftlang.xyz/view/5.8-dev/)
+### [Builds running on Swift Community CI Server](https://ci.swiftlang.xyz/view/riscv64/)
 
 Debian Sid / Unstable - Swift release/5.10 branch &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Build Status](https://ci.swiftlang.xyz/job/swift-5.10-debian-sid-riscv64/badge/icon)](https://ci.swiftlang.xyz/job/swift-5.10-debian-sid-riscv64/)
 
