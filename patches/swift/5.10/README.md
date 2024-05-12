@@ -33,8 +33,8 @@ cd -
 
 # swift-driver
 cd swift-driver
-wget https://github.com/apple/swift-driver/pull/1545.patch
-git apply 1545.patch
+wget https://raw.githubusercontent.com/swift-riscv/swift-riscv64/main/patches/swift/5.10/swift-driver-use-lld-riscv64.patch
+git apply swift-driver-use-lld-riscv64.patch
 cd -
 ```
 
