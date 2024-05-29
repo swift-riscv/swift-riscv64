@@ -1,0 +1,13 @@
+diff --git a/Sources/SwiftDriver/Jobs/GenericUnixToolchain+LinkerSupport.swift b/Sources/SwiftDriver/Jobs/GenericUnixToolchain+LinkerSupport.swift
+index 98ecb4e1..e2087421 100644
+--- a/Sources/SwiftDriver/Jobs/GenericUnixToolchain+LinkerSupport.swift
++++ b/Sources/SwiftDriver/Jobs/GenericUnixToolchain+LinkerSupport.swift
+@@ -28,6 +28,8 @@ extension GenericUnixToolchain {
+     case .x86, .x86_64, .ppc64, .ppc64le, .systemz:
+       // BFD linker has issues wrt relocations against protected symbols.
+       return "gold"
++    case .riscv64:
++      return "lld"
+     default:
+       // Otherwise, use the default BFD linker.
+       return ""
