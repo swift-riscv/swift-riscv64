@@ -1,0 +1,25 @@
+diff --git a/utils/build-presets.ini b/utils/build-presets.ini
+index a8683614afe..7259715e8d3 100644
+--- a/utils/build-presets.ini
++++ b/utils/build-presets.ini
+@@ -1006,13 +1006,19 @@ reconfigure
+ [preset: buildbot_linux,no_test,stage0]
+ build-subdir=buildbot_linux/stage0
+ install-destdir=%(install_destdir)s
++installable-package=%(installable_package)s
++
++extra-cmake-options=
++   -DLLVM_USE_LINKER=lld
++   -DSWIFT_USE_LINKER=lld
++
+ release
+ skip-build-benchmarks
+ skip-test-cmark
+ skip-early-swift-driver
+ skip-early-swiftsyntax
+ bootstrapping=off
+-llvm-targets-to-build=X86;ARM;AArch64
++llvm-targets-to-build=X86;ARM;AArch64;RISCV
+ libdispatch
+ foundation
+ swiftpm
