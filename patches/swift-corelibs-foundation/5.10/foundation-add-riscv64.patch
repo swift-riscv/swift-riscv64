@@ -1,0 +1,236 @@
+diff --git a/CoreFoundation/Base.subproj/SwiftRuntime/TargetConditionals.h b/CoreFoundation/Base.subproj/SwiftRuntime/TargetConditionals.h
+index 7ee2e4cf..908f8274 100644
+--- a/CoreFoundation/Base.subproj/SwiftRuntime/TargetConditionals.h
++++ b/CoreFoundation/Base.subproj/SwiftRuntime/TargetConditionals.h
+@@ -155,6 +155,7 @@
+ #define TARGET_CPU_MIPS64       0
+ #define TARGET_CPU_S390X        0
+ #define TARGET_CPU_WASM32       0
++#define TARGET_CPU_RISCV64      0
+ #elif __arm64__ || __aarch64__
+ #define TARGET_CPU_PPC          0
+ #define TARGET_CPU_PPC64        0
+@@ -166,6 +167,7 @@
+ #define TARGET_CPU_MIPS64       0
+ #define TARGET_CPU_S390X        0
+ #define TARGET_CPU_WASM32       0
++#define TARGET_CPU_RISCV64      0
+ #elif __mips64__
+ #define TARGET_CPU_PPC          0
+ #define TARGET_CPU_PPC64        0
+@@ -177,6 +179,7 @@
+ #define TARGET_CPU_MIPS64       1
+ #define TARGET_CPU_S390X        0
+ #define TARGET_CPU_WASM32       0
++#define TARGET_CPU_RISCV64      0
+ #elif __powerpc64__
+ #define TARGET_CPU_PPC          0
+ #define TARGET_CPU_PPC64        1
+@@ -188,6 +191,7 @@
+ #define TARGET_CPU_MIPS64       0
+ #define TARGET_CPU_S390X        0
+ #define TARGET_CPU_WASM32       0
++#define TARGET_CPU_RISCV64      0
+ #elif __i386__
+ #define TARGET_CPU_PPC          0
+ #define TARGET_CPU_PPC64        0
+@@ -199,6 +203,7 @@
+ #define TARGET_CPU_MIPS64       0
+ #define TARGET_CPU_S390X        0
+ #define TARGET_CPU_WASM32       0
++#define TARGET_CPU_RISCV64      0
+ #elif __arm__
+ #define TARGET_CPU_PPC          0
+ #define TARGET_CPU_PPC64        0
+@@ -210,6 +215,7 @@
+ #define TARGET_CPU_MIPS64       0
+ #define TARGET_CPU_S390X        0
+ #define TARGET_CPU_WASM32       0
++#define TARGET_CPU_RISCV64      0
+ #elif __mips__
+ #define TARGET_CPU_PPC          0
+ #define TARGET_CPU_PPC64        0
+@@ -221,6 +227,7 @@
+ #define TARGET_CPU_MIPS64       0
+ #define TARGET_CPU_S390X        0
+ #define TARGET_CPU_WASM32       0
++#define TARGET_CPU_RISCV64      0
+ #elif __powerpc__
+ #define TARGET_CPU_PPC          1
+ #define TARGET_CPU_PPC64        0
+@@ -232,6 +239,7 @@
+ #define TARGET_CPU_MIPS64       0
+ #define TARGET_CPU_S390X        0
+ #define TARGET_CPU_WASM32       0
++#define TARGET_CPU_RISCV64      0
+ #elif __s390x__
+ #define TARGET_CPU_PPC          0
+ #define TARGET_CPU_PPC64        0
+@@ -243,6 +251,7 @@
+ #define TARGET_CPU_MIPS64       0
+ #define TARGET_CPU_S390X        1
+ #define TARGET_CPU_WASM32       0
++#define TARGET_CPU_RISCV64      0
+ #elif __wasm32__
+ #define TARGET_CPU_PPC          0
+ #define TARGET_CPU_PPC64        0
+@@ -254,6 +263,19 @@
+ #define TARGET_CPU_MIPS64       0
+ #define TARGET_CPU_S390X        0
+ #define TARGET_CPU_WASM32       1
++#define TARGET_CPU_RISCV64      0
++#elif __riscv64__
++#define TARGET_CPU_PPC          0
++#define TARGET_CPU_PPC64        0
++#define TARGET_CPU_X86          0
++#define TARGET_CPU_X86_64       0
++#define TARGET_CPU_ARM          0
++#define TARGET_CPU_ARM64        0
++#define TARGET_CPU_MIPS         0
++#define TARGET_CPU_MIPS64       0
++#define TARGET_CPU_S390X        0
++#define TARGET_CPU_WASM32       0
++#define TARGET_CPU_RISCV64      1
+ #else
+ #error unknown architecture
+ #endif
+diff --git a/Darwin/Foundation-swiftoverlay/Scanner.swift b/Darwin/Foundation-swiftoverlay/Scanner.swift
+index 1a30a558..2a2ef6fa 100644
+--- a/Darwin/Foundation-swiftoverlay/Scanner.swift
++++ b/Darwin/Foundation-swiftoverlay/Scanner.swift
+@@ -86,7 +86,7 @@ extension Scanner {
+     }
+     
+     public func scanInt(representation: NumberRepresentation = .decimal) -> Int? {
+-#if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le)
++#if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le) || arch(riscv64)
+         if let value = scanInt64(representation: representation) { 
+             return Int(value)
+         }
+diff --git a/Sources/Foundation/CGFloat.swift b/Sources/Foundation/CGFloat.swift
+index 61276c83..db60a477 100644
+--- a/Sources/Foundation/CGFloat.swift
++++ b/Sources/Foundation/CGFloat.swift
+@@ -13,7 +13,7 @@ public struct CGFloat {
+     /// The native type used to store the CGFloat, which is Float on
+     /// 32-bit architectures and Double on 64-bit architectures.
+     public typealias NativeType = Float
+-#elseif arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le)
++#elseif arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le) || arch(riscv64)
+     /// The native type used to store the CGFloat, which is Float on
+     /// 32-bit architectures and Double on 64-bit architectures.
+     public typealias NativeType = Double
+@@ -187,7 +187,7 @@ extension CGFloat : BinaryFloatingPoint {
+     public init(bitPattern: UInt) {
+ #if arch(i386) || arch(arm) || arch(wasm32)
+         native = NativeType(bitPattern: UInt32(bitPattern))
+-#elseif arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le)
++#elseif arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le) || arch(riscv64)
+         native = NativeType(bitPattern: UInt64(bitPattern))
+ #else
+     #error("This architecture isn't known. Add it to the 32-bit or 64-bit line.")
+diff --git a/Sources/Foundation/Data.swift b/Sources/Foundation/Data.swift
+index 86585a3a..4cb71198 100644
+--- a/Sources/Foundation/Data.swift
++++ b/Sources/Foundation/Data.swift
+@@ -677,7 +677,7 @@ public struct Data : ReferenceConvertible, Equatable, Hashable, RandomAccessColl
+     @usableFromInline
+     @frozen
+     internal struct InlineData {
+-#if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le)
++#if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le) || arch(riscv64)
+         @usableFromInline typealias Buffer = (UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8,
+                                               UInt8, UInt8, UInt8, UInt8, UInt8, UInt8) //len  //enum
+         @usableFromInline var bytes: Buffer
+@@ -708,7 +708,7 @@ public struct Data : ReferenceConvertible, Equatable, Hashable, RandomAccessColl
+         @inlinable // This is @inlinable as a trivial initializer.
+         init(count: Int = 0) {
+             assert(count <= MemoryLayout<Buffer>.size)
+-#if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le)
++#if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le) || arch(riscv64)
+             bytes = (UInt8(0), UInt8(0), UInt8(0), UInt8(0), UInt8(0), UInt8(0), UInt8(0), UInt8(0), UInt8(0), UInt8(0), UInt8(0), UInt8(0), UInt8(0), UInt8(0))
+ #elseif arch(i386) || arch(arm) || arch(wasm32)
+             bytes = (UInt8(0), UInt8(0), UInt8(0), UInt8(0), UInt8(0), UInt8(0))
+@@ -891,7 +891,7 @@ public struct Data : ReferenceConvertible, Equatable, Hashable, RandomAccessColl
+         }
+     }
+ 
+-#if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le)
++#if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le) || arch(riscv64)
+     @usableFromInline internal typealias HalfInt = Int32
+ #elseif arch(i386) || arch(arm) || arch(wasm32)
+     @usableFromInline internal typealias HalfInt = Int16
+diff --git a/Sources/Foundation/NSNumber.swift b/Sources/Foundation/NSNumber.swift
+index 883a44c2..4a240a2f 100644
+--- a/Sources/Foundation/NSNumber.swift
++++ b/Sources/Foundation/NSNumber.swift
+@@ -736,7 +736,7 @@ open class NSNumber : NSValue {
+     
+     public convenience init(value: Int) {
+         var value = value
+-        #if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le)
++        #if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le) || arch(riscv64)
+             self.init(bytes: &value, numberType: kCFNumberSInt64Type)
+         #elseif arch(i386) || arch(arm) || arch(wasm32)
+             self.init(bytes: &value, numberType: kCFNumberSInt32Type)
+@@ -746,7 +746,7 @@ open class NSNumber : NSValue {
+     }
+     
+     public convenience init(value: UInt) {
+-    #if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le)
++    #if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le) || arch(riscv64)
+         if value > UInt64(Int64.max) {
+             var value = CFSInt128Struct(high: 0, low: UInt64(value))
+             self.init(bytes: &value, numberType: kCFNumberSInt128Type)
+diff --git a/Sources/Foundation/NSRange.swift b/Sources/Foundation/NSRange.swift
+index 3ec747b0..bcea0710 100644
+--- a/Sources/Foundation/NSRange.swift
++++ b/Sources/Foundation/NSRange.swift
+@@ -381,7 +381,7 @@ extension NSRange: NSSpecialValueCoding {
+     static func objCType() -> String {
+ #if arch(i386) || arch(arm) || arch(wasm32)
+         return "{_NSRange=II}"
+-#elseif arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le)
++#elseif arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le) || arch(riscv64)
+         return "{_NSRange=QQ}"
+ #else
+         #error("This architecture isn't known. Add it to the 32-bit or 64-bit line.")
+diff --git a/Sources/Foundation/ScannerAPI.swift b/Sources/Foundation/ScannerAPI.swift
+index d3fe75ed..4a6d5e5a 100644
+--- a/Sources/Foundation/ScannerAPI.swift
++++ b/Sources/Foundation/ScannerAPI.swift
+@@ -39,7 +39,7 @@ extension Scanner {
+     }
+     
+     public func scanInt(representation: NumberRepresentation = .decimal) -> Int? {
+-        #if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le)
++        #if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le) || arch(riscv64)
+         if let value = scanInt64(representation: representation) {
+             return Int(value)
+         }
+diff --git a/Tests/Foundation/Tests/TestNSNumber.swift b/Tests/Foundation/Tests/TestNSNumber.swift
+index 7bcd453e..80507cd6 100644
+--- a/Tests/Foundation/Tests/TestNSNumber.swift
++++ b/Tests/Foundation/Tests/TestNSNumber.swift
+@@ -1227,7 +1227,7 @@ class TestNSNumber : XCTestCase {
+         XCTAssertEqual("Q" /* 0x51 */, objCType(NSNumber(value: UInt64(Int64.max) + 1)))
+ 
+         // Depends on architectures
+-        #if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le)
++        #if arch(x86_64) || arch(arm64) || arch(s390x) || arch(powerpc64) || arch(powerpc64le) || arch(riscv64)
+             XCTAssertEqual("q" /* 0x71 */, objCType(NSNumber(value: Int.max)))
+             // When value is lower equal to `Int.max`, it returns 'q' even if using `UInt`
+             XCTAssertEqual("q" /* 0x71 */, objCType(NSNumber(value: UInt(Int.max))))
+diff --git a/cmake/modules/SwiftSupport.cmake b/cmake/modules/SwiftSupport.cmake
+index ffb24527..6cfbdb81 100644
+--- a/cmake/modules/SwiftSupport.cmake
++++ b/cmake/modules/SwiftSupport.cmake
+@@ -35,6 +35,8 @@ function(get_swift_host_arch result_var_name)
+     set("${result_var_name}" "i686" PARENT_SCOPE)
+   elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "wasm32")
+     set("${result_var_name}" "wasm32" PARENT_SCOPE)
++  elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "riscv64")
++    set("${result_var_name}" "riscv64" PARENT_SCOPE)
+   else()
+     message(FATAL_ERROR "Unrecognized architecture on host system: ${CMAKE_SYSTEM_PROCESSOR}")
+   endif()
