@@ -1,0 +1,13 @@
+diff --git a/cmake/modules/SwiftSupport.cmake b/cmake/modules/SwiftSupport.cmake
+index a73a4e5..8f1e2c4 100644
+--- a/cmake/modules/SwiftSupport.cmake
++++ b/cmake/modules/SwiftSupport.cmake
+@@ -45,6 +45,8 @@ function(get_swift_host_arch result_var_name)
+     set("${result_var_name}" "i686" PARENT_SCOPE)
+   elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
+     set("${result_var_name}" "i686" PARENT_SCOPE)
++  elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "riscv64")
++    set("${result_var_name}" "riscv64" PARENT_SCOPE)
+   else()
+     message(FATAL_ERROR "Unrecognized architecture on host system: ${CMAKE_SYSTEM_PROCESSOR}")
+   endif()
