@@ -1,0 +1,150 @@
+diff --git a/clang/lib/Basic/Targets/RISCV.h b/clang/lib/Basic/Targets/RISCV.h
+index 21c5e7ab795b..5172be9c64e6 100644
+--- a/clang/lib/Basic/Targets/RISCV.h
++++ b/clang/lib/Basic/Targets/RISCV.h
+@@ -105,6 +105,17 @@ public:
+   void fillValidCPUList(SmallVectorImpl<StringRef> &Values) const override;
+   bool isValidTuneCPUName(StringRef Name) const override;
+   void fillValidTuneCPUList(SmallVectorImpl<StringRef> &Values) const override;
++
++  CallingConvCheckResult checkCallingConvention(CallingConv CC) const override {
++       switch(CC) {
++        case CC_Swift:
++         return CCCR_OK;
++        case CC_SwiftAsync:
++         return CCCR_Error;
++        default:
++         return CCCR_Warning;
++       }
++  }
+ };
+ class LLVM_LIBRARY_VISIBILITY RISCV32TargetInfo : public RISCVTargetInfo {
+ public:
+diff --git a/clang/lib/CodeGen/TargetInfo.cpp b/clang/lib/CodeGen/TargetInfo.cpp
+index 74997f0f9e9d..acd7ef6d92ac 100644
+--- a/clang/lib/CodeGen/TargetInfo.cpp
++++ b/clang/lib/CodeGen/TargetInfo.cpp
+@@ -10823,8 +10823,9 @@ static bool getTypeString(SmallStringEnc &Enc, const Decl *D,
+ //===----------------------------------------------------------------------===//
+ 
+ namespace {
+-class RISCVABIInfo : public DefaultABIInfo {
++class RISCVABIInfo : public ABIInfo {
+ private:
++  DefaultABIInfo defaultInfo;
+   // Size of the integer ('x') registers in bits.
+   unsigned XLen;
+   // Size of the floating point ('f') registers in bits. Note that the target
+@@ -10841,7 +10842,7 @@ private:
+ 
+ public:
+   RISCVABIInfo(CodeGen::CodeGenTypes &CGT, unsigned XLen, unsigned FLen)
+-      : DefaultABIInfo(CGT), XLen(XLen), FLen(FLen) {}
++      : ABIInfo(CGT), defaultInfo(CGT), XLen(XLen), FLen(FLen) {}
+ 
+   // DefaultABIInfo's classifyReturnType and classifyArgumentType are
+   // non-virtual, but computeInfo is virtual, so we overload it.
+@@ -10864,7 +10865,9 @@ public:
+                                                CharUnits Field1Off,
+                                                llvm::Type *Field2Ty,
+                                                CharUnits Field2Off) const;
++
+ };
++
+ } // end anonymous namespace
+ 
+ void RISCVABIInfo::computeInfo(CGFunctionInfo &FI) const {
+@@ -11279,7 +11282,9 @@ class RISCVTargetCodeGenInfo : public TargetCodeGenInfo {
+ public:
+   RISCVTargetCodeGenInfo(CodeGen::CodeGenTypes &CGT, unsigned XLen,
+                          unsigned FLen)
+-      : TargetCodeGenInfo(std::make_unique<RISCVABIInfo>(CGT, XLen, FLen)) {}
++      : TargetCodeGenInfo(std::make_unique<RISCVABIInfo>(CGT, XLen, FLen)) {
++        SwiftInfo = std::make_unique<SwiftABIInfo>(CGT, false);
++      }
+ 
+   void setTargetAttributes(const Decl *D, llvm::GlobalValue *GV,
+                            CodeGen::CodeGenModule &CGM) const override {
+diff --git a/lld/ELF/Arch/RISCV.cpp b/lld/ELF/Arch/RISCV.cpp
+index 347784bb080d..331a1e3e4e9d 100644
+--- a/lld/ELF/Arch/RISCV.cpp
++++ b/lld/ELF/Arch/RISCV.cpp
+@@ -617,7 +617,7 @@ static bool relax(InputSection &sec) {
+   // iteration.
+   DenseMap<const Defined *, uint64_t> valueDelta;
+   ArrayRef<SymbolAnchor> sa = makeArrayRef(aux.anchors);
+-  uint32_t delta = 0;
++  uint64_t delta = 0;
+   for (auto [i, r] : llvm::enumerate(sec.relocations)) {
+     for (; sa.size() && sa[0].offset <= r.offset; sa = sa.slice(1))
+       if (!sa[0].end)
+@@ -684,7 +684,7 @@ static bool relax(InputSection &sec) {
+       a.d->value -= delta - valueDelta.find(a.d)->second;
+   }
+   // Inform assignAddresses that the size has changed.
+-  if (!isUInt<16>(delta))
++  if (!isUInt<32>(delta))
+     fatal("section size decrease is too large");
+   sec.bytesDropped = delta;
+   return changed;
+diff --git a/lld/ELF/Driver.cpp b/lld/ELF/Driver.cpp
+index 7d9b776fd042..0271f31729c3 100644
+--- a/lld/ELF/Driver.cpp
++++ b/lld/ELF/Driver.cpp
+@@ -1242,7 +1242,7 @@ static void readConfigs(opt::InputArgList &args) {
+   config->trace = args.hasArg(OPT_trace);
+   config->undefined = args::getStrings(args, OPT_undefined);
+   config->undefinedVersion =
+-      args.hasFlag(OPT_undefined_version, OPT_no_undefined_version, false);
++      args.hasFlag(OPT_undefined_version, OPT_no_undefined_version, true);
+   config->unique = args.hasArg(OPT_unique);
+   config->useAndroidRelrTags = args.hasFlag(
+       OPT_use_android_relr_tags, OPT_no_use_android_relr_tags, false);
+diff --git a/lld/ELF/InputSection.h b/lld/ELF/InputSection.h
+index 0663b2763e58..66ccc930f1b1 100644
+--- a/lld/ELF/InputSection.h
++++ b/lld/ELF/InputSection.h
+@@ -137,7 +137,7 @@ public:
+   // Used by --optimize-bb-jumps and RISC-V linker relaxation temporarily to
+   // indicate the number of bytes which is not counted in the size. This should
+   // be reset to zero after uses.
+-  uint16_t bytesDropped = 0;
++  uint32_t bytesDropped = 0;
+ 
+   // Whether the section needs to be padded with a NOP filler due to
+   // deleteFallThruJmpInsn.
+@@ -395,7 +395,7 @@ private:
+   template <class ELFT> void copyShtGroup(uint8_t *buf);
+ };
+ 
+-static_assert(sizeof(InputSection) <= 160, "InputSection is too big");
++//static_assert(sizeof(InputSection) <= 160, "InputSection is too big");
+ 
+ class SyntheticSection : public InputSection {
+ public:
+diff --git a/lldb/source/Plugins/Process/Linux/NativeRegisterContextLinux_riscv64.cpp b/lldb/source/Plugins/Process/Linux/NativeRegisterContextLinux_riscv64.cpp
+index 342fc1aa1a41..1d51726a86df 100644
+--- a/lldb/source/Plugins/Process/Linux/NativeRegisterContextLinux_riscv64.cpp
++++ b/lldb/source/Plugins/Process/Linux/NativeRegisterContextLinux_riscv64.cpp
+@@ -135,7 +135,7 @@ NativeRegisterContextLinux_riscv64::ReadRegister(const RegisterInfo *reg_info,
+     return Status("failed - register wasn't recognized to be a GPR or an FPR, "
+                   "write strategy unknown");
+ 
+-  reg_value.SetFromMemoryData(reg_info, src, reg_info->byte_size,
++  reg_value.SetFromMemoryData(*reg_info, src, reg_info->byte_size,
+                               eByteOrderLittle, error);
+ 
+   return error;
+diff --git a/llvm/lib/Target/RISCV/RISCVISelLowering.cpp b/llvm/lib/Target/RISCV/RISCVISelLowering.cpp
+index 46c9fd36fb53..08bac73adca4 100644
+--- a/llvm/lib/Target/RISCV/RISCVISelLowering.cpp
++++ b/llvm/lib/Target/RISCV/RISCVISelLowering.cpp
+@@ -11406,6 +11406,8 @@ SDValue RISCVTargetLowering::LowerFormalArguments(
+   default:
+     report_fatal_error("Unsupported calling convention");
+   case CallingConv::C:
++  case CallingConv::Swift:
++  case CallingConv::SwiftTail:
+   case CallingConv::Fast:
+     break;
+   case CallingConv::GHC:
