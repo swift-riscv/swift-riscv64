@@ -1,0 +1,15 @@
+diff --git a/clang/lib/CodeGen/TargetInfo.cpp b/clang/lib/CodeGen/TargetInfo.cpp
+index 74997f0f9e9d..e9a8e0abe397 100644
+--- a/clang/lib/CodeGen/TargetInfo.cpp
++++ b/clang/lib/CodeGen/TargetInfo.cpp
+@@ -11279,7 +11279,9 @@ class RISCVTargetCodeGenInfo : public TargetCodeGenInfo {
+ public:
+   RISCVTargetCodeGenInfo(CodeGen::CodeGenTypes &CGT, unsigned XLen,
+                          unsigned FLen)
+-      : TargetCodeGenInfo(std::make_unique<RISCVABIInfo>(CGT, XLen, FLen)) {}
++      : TargetCodeGenInfo(std::make_unique<RISCVABIInfo>(CGT, XLen, FLen)) {
++        SwiftInfo = std::make_unique<SwiftABIInfo>(CGT, false);
++      }
+ 
+   void setTargetAttributes(const Decl *D, llvm::GlobalValue *GV,
+                            CodeGen::CodeGenModule &CGM) const override {
