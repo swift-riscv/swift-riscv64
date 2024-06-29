@@ -6,7 +6,7 @@
 
 - All development has now moved to `swift-5.10.1-RELEASE` and the `main-branch`. Older swift versions have proved to be too difficult and not viable to continue.
   </br>
-- We should have a test release of `swift-5.10.1-RELEASE` for riscv64 very soon!
+- Test release of `swift-5.10.1-RELEASE` for riscv64 is now available!
   </br>
 - A new project, [Patches to Upstream](https://github.com/orgs/swift-riscv/projects/2), has been set up to track upstream patches being submitted to `swift` and all the supporting projects.
   </br>
